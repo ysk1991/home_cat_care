@@ -1,23 +1,83 @@
 "use client";
 
 import Image from "next/image";
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 
 export default function Home() {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const openDateTimePicker = (input: HTMLInputElement) => {
+    if ("showPicker" in input) {
+      input.showPicker();
+    }
+  };
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (isSubmitting) return;
 
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const name = formData.get("name") as string;
-    const plan = formData.get("plan") as string;
-    const phone = formData.get("phone") as string;
+    const name = formData.get("name");
+    const phone = formData.get("phone");
+    const plan = formData.get("plan");
+    const appointmentTime = formData.get("appointmentTime");
+    const address = formData.get("address");
+    const note = formData.get("note");
 
-    alert(
-      `预约已记录：\n称呼：${name}\n手机号：${phone}\n套餐：${plan}\n我们会尽快联系你。`,
-    );
+    if (
+      typeof name !== "string" ||
+      typeof phone !== "string" ||
+      typeof plan !== "string" ||
+      typeof appointmentTime !== "string" ||
+      typeof address !== "string" ||
+      typeof note !== "string"
+    ) {
+      alert("提交失败：表单字段异常，请刷新页面后重试。");
+      return;
+    }
 
-    form.reset();
+    const appointmentDate = new Date(appointmentTime);
+    if (Number.isNaN(appointmentDate.getTime())) {
+      alert("提交失败：上门时间格式不正确。");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          phone,
+          plan,
+          appointmentTime: appointmentDate.toISOString(),
+          address,
+          note,
+        }),
+      });
+
+      if (!response.ok) {
+        const result = (await response.json().catch(() => ({}))) as { error?: string };
+        alert(
+          `提交失败：${result.error ?? "请检查服务端配置"}`,
+        );
+        return;
+      }
+
+      alert("预约提交成功，已即时发送邮件通知。");
+      form.reset();
+    } catch (submitError) {
+      const message =
+        submitError instanceof Error ? submitError.message : "未知错误，请稍后重试";
+      alert(`提交失败：${message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -113,7 +173,6 @@ export default function Home() {
               <input
                 type="tel"
                 name="phone"
-                pattern="^1\\d{10}$"
                 placeholder="11位手机号"
                 required
               />
@@ -128,6 +187,15 @@ export default function Home() {
               </select>
             </label>
             <label>
+              上门时间
+              <input
+                type="datetime-local"
+                name="appointmentTime"
+                required
+                onClick={(event) => openDateTimePicker(event.currentTarget)}
+              />
+            </label>
+            <label>
               服务地址
               <input type="text" name="address" placeholder="请填写到小区/楼栋" required />
             </label>
@@ -138,11 +206,11 @@ export default function Home() {
                 placeholder="猫咪习惯、喂食禁忌、上门时间偏好等"
               />
             </label>
-            <button className="btn primary" type="submit">
-              提交预约
+            <button className="btn primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "提交中..." : "提交预约"}
             </button>
             <div className="meta">
-              提交后将由人工 10 分钟内联系确认（演示页面，不会真实发送数据）。
+              提交后将写入预约系统，并由人工尽快联系确认。
             </div>
           </form>
         </div>
