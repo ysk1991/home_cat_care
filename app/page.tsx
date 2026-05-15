@@ -115,30 +115,6 @@ export default function Home() {
         </div>
       </header>
 
-      <section id="service">
-        <h2>服务内容</h2>
-        <div className="grid-3">
-          <article className="panel">
-            <h3>基础喂养</h3>
-            <p>
-              按你的喂养计划执行主粮、零食与饮水补充，支持定时器、湿粮开罐等细节操作。
-            </p>
-          </article>
-          <article className="panel">
-            <h3>环境清洁</h3>
-            <p>
-              清理猫砂盆、补充猫砂，处理常见掉毛区域，保持猫咪活动区整洁舒适。
-            </p>
-          </article>
-          <article className="panel">
-            <h3>陪玩观察</h3>
-            <p>
-              15-20 分钟互动，观察精神状态、进食与排泄情况，并给你发送图文回传。
-            </p>
-          </article>
-        </div>
-      </section>
-
       <section id="plans">
         <h2>套餐与价格</h2>
         <div className="grid-3">
@@ -235,29 +211,6 @@ export default function Home() {
               地图内已用宠物爪印图钉标注“我们的宠物店（喂猫宠物店）”，到店可直接按图导航。
             </p>
             <div className="map-tip">营业时间：09:30 - 21:30（建议到店前电话确认）</div>
-          </article>
-        </div>
-      </section>
-
-      <section>
-        <div className="split">
-          <article className="panel">
-            <h2>服务流程</h2>
-            <p>
-              1. 提交预约信息并确认时间
-              <br />
-              2. 首次沟通喂养习惯与注意事项
-              <br />
-              3. 准时上门执行服务并实时回传
-              <br />
-              4. 服务结束后发送完整记录
-            </p>
-          </article>
-          <article className="panel">
-            <h2>保障说明</h2>
-            <p>
-              全程实名认证；服务前后拍照记录；支持指定门锁/钥匙交接方式；若遇突发情况，第一时间电话联系。
-            </p>
           </article>
         </div>
       </section>
